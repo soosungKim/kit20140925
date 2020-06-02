@@ -25,8 +25,6 @@ def gamestart():
         print(character['item'])
     return "{}아이템을 사용했습니다. ".format(character["item"])
 
-
-
 @app.route('/input/<int:num>')
 def input_num(num):
     if num == 1:
