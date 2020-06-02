@@ -1,5 +1,5 @@
 from flask import Flask , request, render_template, redirect, url_for
-import save
+import game
 import json
 
 app = Flask(__name__)
@@ -14,29 +14,31 @@ def hello():
 
 @app.route('/hello/<name>')
 def hellovar(name):
-    character = save.set_charact(name)
-    return "{0}님 행운을 빕니다. 남은 체력 : {1}".format(character["name"], character["hp"])
+    character = game.set_charact(name)
+    return render_template('gamestart.html', data=character)
 
-@app.route('/game')
-def game():
-    with open("static/save.txt", "r", encoding='uft-8') as f:
+@app.route('/gamestart')
+def gamestart():
+    with open("static/save.txt", "r", encoding='utf-8') as f:
         data = f.read()
-        character = json.load(data)
-        print(character)
-    return "{0}님 행운을 빕니다. 남은 체력 : {1}".format(character["name"], character["hp"])
+        character = json.loads(data)
+        print(character['item'])
+    return "{}아이템을 사용했습니다. ".format(character["item"])
 
 
 
 @app.route('/input/<int:num>')
 def input_num(num):
     if num == 1:
-        return "쑤"
+        with open("static/save.txt", "r", encoding='utf-8') as f:
+            data = f.read()
+            character = json.loads(data)
+            print(character['name'])
+        return "{}은 건물을 수색하기로 했습니다... ".format(character["name"])
     elif num == 2:
-        return "쑤우"
-    elif num == 3:
-        return "쑤우우"
+        return "당신은 건물을 그냥 지나치기로 하였습니다. "
     else:
-        return "없음"
+        return "어떻게 할지 선택하세요."
 
 @app.route('/move/naver')
 def naver():

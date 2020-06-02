@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>게임 시작</h2>
+{{ data.name }}님 행운을 빕니다. 남은 체력 : {{ data.hp }}<br>
+어떤 건물을 발견하였습니다. 들어가 보시겠습니까?<br>
+<a href={{ url_for('input_num', num=1) }}> 1.들어간다 </a><br>
+<a href={{ url_for('input_num', num=2) }}> 2.들어가지 않는다 </a> <br>
+
+
+</body>
+</html>
