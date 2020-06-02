@@ -1,4 +1,7 @@
 from flask import Flask , request, render_template, redirect, url_for
+import save
+import json
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -9,10 +12,19 @@ def index():
 def hello():
     return 'Hello, World!'
 
-
 @app.route('/hello/<name>')
 def hellovar(name):
-    return 'Hello, {}!'.format(name)
+    character = save.set_charact(name)
+    return "{0}님 행운을 빕니다. 남은 체력 : {1}".format(character["name"], character["hp"])
+
+@app.route('/game')
+def game():
+    with open("static/save.txt", "r", encoding='uft-8') as f:
+        data = f.read()
+        character = json.load(data)
+        print(character)
+    return "{0}님 행운을 빕니다. 남은 체력 : {1}".format(character["name"], character["hp"])
+
 
 
 @app.route('/input/<int:num>')
