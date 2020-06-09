@@ -1,4 +1,4 @@
-from flask import Flask , request, render_template, redirect, url_for
+from flask import Flask , request, render_template, redirect, url_for, abort, session
 import game
 import json
 import dbdb
@@ -8,6 +8,35 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return '메인페이지'
+
+@app.route('/login')
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    else:
+        id = request.form['id']
+        pw = request.form['pw']
+        if id == 'abc' and pw == '1234':
+            session['user'] = id
+            return '''
+            <script> alert("안녕하세요 {}님");
+            location.href="/form"
+            </script>
+            '''.format(id)
+        else:
+            return "아이디 또는 패스워드를 확인하세요."
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('form'))
+
+@app.route('/form')
+def form():
+    if 'user' in session:
+        return render_template('test.html')
+    return redirect(url_for('login'))
+
 
 @app.route('/method', methods=['GET', 'POST'])
 def method():
@@ -30,18 +59,10 @@ def getinfo():
 def hello():
     return 'Hello, World!'
 
-@app.route('/hello/<name>')
+@app.route('/game/<name>')
 def hellovar(name):
     character = game.set_charact(name)
     return render_template('gamestart.html', data=character)
-
-@app.route('/gamestart')
-def gamestart():
-    with open("static/save.txt", "r", encoding='utf-8') as f:
-        data = f.read()
-        character = json.loads(data)
-        print(character['item'])
-    return "{}아이템을 사용했습니다. ".format(character["item"])
 
 @app.route('/input/<int:num>')
 def input_num(num):
@@ -56,6 +77,27 @@ def input_num(num):
     else:
         return "어떻게 할지 선택하세요."
 
+@app.route('/games/<name>')
+def game_route(name):
+    character = game.set_charact(name)
+    return render_template('game1.html', data=character)
+
+
+
+@app.route('/route/<int:num>')
+def input_route(num1):
+    if num1 == 1:
+        with open("static/save.txt", "r", encoding='utf-8') as f:
+            data = f.read()
+            character = json.loads(data)
+            print(character['name'])
+        return "{}는 좀비를 물리쳤습니다!".format(character["name"])
+    elif num1 == 2:
+        return  "당신은 좀비에게서 도망치다 사망했습니다..."
+    else:
+        return "어떻게 할지 선택하세요."
+
+
 @app.route('/move/naver')
 def naver():
     return render_template("naver.html")
@@ -67,12 +109,6 @@ def daum():
 @app.route('/urltest')
 def url_test():
     return redirect(url_for('daum'))
-
-
-@app.route('/img')
-def img():
-    return render_template("image.html")
-
 
 if __name__ =='__main__':
     with app.test_request_context():
