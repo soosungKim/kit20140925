@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>건물 수색</h2>
+
+{{ data.name }}는 건물에 들어가기로 했습니다. <br>
+그곳엔 좀비가 있었습니다. 어떻게 하시겠습니까? <br>
+<a href={{ url_for('input_route', num=1) }}> 1.싸운다 </a><br>
+<a href={{ url_for('input_route', num=2) }}> 2.도망간다 </a> <br>
+
+
+</body>
+</html>
