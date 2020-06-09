@@ -1,12 +1,30 @@
 from flask import Flask , request, render_template, redirect, url_for
 import game
 import json
+import dbdb
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return '메인페이지'
+
+@app.route('/method', methods=['GET', 'POST'])
+def method():
+    if request.method =='GET':
+        return 'GET 으로 전송이다.'
+    else:
+        num = request.form["num"]
+        name = request.form["name"]
+        dbdb.insert_data(num, name)
+        return 'POST 이다. 학번은: {} 이름은: {}'.format(num, name)
+    
+@app.route('/getinfo')
+def getinfo():
+    ret = dbdb.select_all()
+    print(ret[3])
+    return render_template('getinfo.html', data=ret)
+
 
 @app.route('/hello')
 def hello():
@@ -50,18 +68,6 @@ def daum():
 def url_test():
     return redirect(url_for('daum'))
 
-@app.route('/login', methods=['GET', 'post'])
-def method():
-    if request.method == 'GET':
-        return render_template('login.html')
-    
-    else:
-        id = request.form['id']
-        pw = request.form['pw']
-        if id == 'abc' and pw == '1234':
-            return "반갑습니다.{} ".format(id)
-        else:
-            return "아이디와 패스워드를 확인해주세요."
 
 @app.route('/img')
 def img():
