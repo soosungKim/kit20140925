@@ -8,7 +8,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return '메인페이지'
+    return render_template('main.html')
+
+@app.route('/emty')
+def emty(emty):
+    return render_template("emty.html")
+
 
 @app.route('/login')
 def login():
@@ -48,7 +53,7 @@ def method():
         name = request.form["name"]
         dbdb.insert_data(num, name)
         return 'POST 이다. 학번은: {} 이름은: {}'.format(num, name)
-    
+
 @app.route('/getinfo')
 def getinfo():
     ret = dbdb.select_all()
@@ -60,7 +65,7 @@ def getinfo():
 def hello():
     return 'Hello, World!'
 
-@app.route('/game/<name>')
+@app.route('/gamestart<name>')
 def hellovar(name):
     character = game.set_charact(name)
     return render_template('gamestart.html', data=character)
@@ -72,21 +77,27 @@ def input_num(num):
             data = f.read()
             character = json.loads(data)
             print(character['name'])
-        return "{}은 건물을 수색하기로 했습니다... ".format(character["name"])
+        return "상대는 가위,{}은 가위를 내서 비겼습니다.".format(character["name"])
     elif num == 2:
-        return "당신은 건물을 그냥 지나치기로 하였습니다. "
-    else:
-        return "어떻게 할지 선택하세요."
+        with open("static/save.txt", "r", encoding='utf-8') as f:
+            data = f.read()
+            character = json.loads(data)
+            print(character['name'])
+        return "상대는 가위,{}은 바위를 내 이겼습니다!".format(character["name"])
+    elif num == 3:
+        with open("static/save.txt", "r", encoding='utf-8') as f:
+            data = f.read()
+            character = json.loads(data)
+            print(character['name'])
+        return "상대는 가위,{}은 보를 내 졌습니다...".format(character["name"])
 
 @app.route('/games/<name>')
 def game_route(name):
     character = game.set_charact(name)
     return render_template('game1.html', data=character)
 
-
-
 @app.route('/route/<int:num>')
-def input_route(num1):
+def game1(num1):
     if num1 == 1:
         with open("static/save.txt", "r", encoding='utf-8') as f:
             data = f.read()
@@ -99,19 +110,8 @@ def input_route(num1):
         return "어떻게 할지 선택하세요."
 
 
-@app.route('/move/naver')
-def naver():
-    return render_template("naver.html")
 
-@app.route('/move/daum')
-def daum():
-    return redirect("https://www.daum.net")
 
-@app.route('/urltest')
-def url_test():
-    return redirect(url_for('daum'))
 
 if __name__ =='__main__':
-    with app.test_request_context():
-        print(url_for('daum'))
     app.run(debug=True)
